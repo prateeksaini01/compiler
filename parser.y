@@ -39,29 +39,51 @@
 
 %%
 
-program : functionDefinition | program functionDefinition ;
+program 
+: functionDefinition 
+| program functionDefinition ;
 
-literal : STRING | CONSTANT ;
+literal 
+: STRING 
+| CONSTANT ;
 
-inputStatement : INPUT_K OPEN_BRACKET INDENTIFIER CLOSE_BRACKET ;
+inputStatement 
+: INPUT_K OPEN_BRACKET INDENTIFIER CLOSE_BRACKET ;
 
-outputStatement : OUTPUT_K OPEN_BRACKET INDENTIFIER CLOSE_BRACKET 
+outputStatement 
+: OUTPUT_K OPEN_BRACKET INDENTIFIER CLOSE_BRACKET 
 | OUTPUT_K OPEN_BRACKET literal CLOSE_BRACKET ;
 
-expression : term | term BIN_OP expression ;
+expression 
+: term 
+| term BIN_OP expression ;
 
-commaSeparatedExpressions : expression | commaSeparatedExpressions COMMA expression ;
+commaSeparatedExpressions 
+: expression 
+| commaSeparatedExpressions COMMA expression ;
 
-functionCallStatement : INDENTIFIER OPEN_BRACKET CLOSE_BRACKET
+functionCall 
+: INDENTIFIER OPEN_BRACKET CLOSE_BRACKET
 | INDENTIFIER OPEN_BRACKET commaSeparatedExpressions CLOSE_BRACKET ;
 
-term : INDENTIFIER | literal | functionCallStatement | OPEN_BRACKET UN_OP expression CLOSE_BRACKET | OPEN_BRACKET expression CLOSE_BRACKET;
 
-declaration : DATATYPE INDENTIFIER | declaration OPEN_SQUARE expression CLOSE_SQUARE ;
+term 
+: INDENTIFIER 
+| literal 
+| functionCall
+| OPEN_BRACKET expression CLOSE_BRACKET
+| UN_OP term ;
 
-commaSeparatedDeclarations : declaration | commaSeparatedDeclarations COMMA declaration ;
+declaration 
+: DATATYPE INDENTIFIER 
+| declaration OPEN_SQUARE expression CLOSE_SQUARE ;
 
-statement : SEMICOLON 
+commaSeparatedDeclarations 
+: declaration 
+| commaSeparatedDeclarations COMMA declaration ;
+
+statement 
+: SEMICOLON 
 | RETURN_K expression SEMICOLON
 | BREAK_K SEMICOLON
 | CONTINUE_K SEMICOLON
@@ -73,21 +95,31 @@ statement : SEMICOLON
 | expression SEMICOLON
 | declaration SEMICOLON ;
 
-statements : statement | statements statement ;
+statements 
+: statement 
+| statements statement ;
 
-block : OPEN_CURLY statements CLOSE_CURLY ;
+block 
+: OPEN_CURLY statements CLOSE_CURLY ;
 
-whileStatement : WHILE_K OPEN_BRACKET expression CLOSE_BRACKET block ;
+whileStatement 
+: WHILE_K OPEN_BRACKET expression CLOSE_BRACKET block ;
 
-forStatement : FOR_K OPEN_BRACKET expression SEMICOLON expression SEMICOLON expression CLOSE_BRACKET block ;
+forStatement 
+: FOR_K OPEN_BRACKET expression SEMICOLON expression SEMICOLON expression CLOSE_BRACKET block ;
 
-ifStatement : IF_K OPEN_BRACKET expression CLOSE_BRACKET block ;
+ifStatement 
+: IF_K OPEN_BRACKET expression CLOSE_BRACKET block ;
 
-elseStatement : ELSE_K OPEN_BRACKET expression CLOSE_BRACKET block ;
+elseStatement 
+: ELSE_K OPEN_BRACKET expression CLOSE_BRACKET block ;
 
-ifElseStatement : ifStatement | ifStatement elseStatement ;
+ifElseStatement 
+: ifStatement 
+| ifStatement elseStatement ;
 
-functionDefinition : DATATYPE INDENTIFIER OPEN_BRACKET commaSeparatedDeclarations CLOSE_BRACKET block 
+functionDefinition 
+: DATATYPE INDENTIFIER OPEN_BRACKET commaSeparatedDeclarations CLOSE_BRACKET block 
 | DATATYPE INDENTIFIER OPEN_BRACKET CLOSE_BRACKET block;
 %%
 

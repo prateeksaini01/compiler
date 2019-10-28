@@ -25,7 +25,7 @@ extern int yylex();
 	return CONSTANT;
 }
 
-"int"|"float" {
+"int"|"float"|"void" {
 	printf("a datatype.");
 	return DATATYPE;
 }

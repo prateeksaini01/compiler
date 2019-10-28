@@ -59,15 +59,26 @@ extern int yydebug;
     OUTPUT_K = 269,
     SEMICOLON = 270,
     COMMA = 271,
-    BIN_OP = 272,
-    UN_OP = 273,
-    OPEN_BRACKET = 274,
-    CLOSE_BRACKET = 275,
-    OPEN_SQUARE = 276,
-    CLOSE_SQUARE = 277,
-    OPEN_CURLY = 278,
-    CLOSE_CURLY = 279,
-    INDENTIFIER = 280
+    OP_MUL = 272,
+    BIN_OP_MUL = 273,
+    BIN_OP_ADD = 274,
+    BIN_OP_SHIFT = 275,
+    BIN_OP_REL = 276,
+    BIN_OP_EQ = 277,
+    BIN_OP_ASSIGN = 278,
+    BIN_OP_BAND = 279,
+    BIN_OP_BOR = 280,
+    BIN_OP_BXOR = 281,
+    BIN_OP_LAND = 282,
+    BIN_OP_LOR = 283,
+    UN_OP = 284,
+    OPEN_BRACKET = 285,
+    CLOSE_BRACKET = 286,
+    OPEN_SQUARE = 287,
+    CLOSE_SQUARE = 288,
+    OPEN_CURLY = 289,
+    CLOSE_CURLY = 290,
+    IDENTIFIER = 291
   };
 #endif
 
@@ -82,7 +93,7 @@ union YYSTYPE
 	float fval;
 	char  sval[100];
 
-#line 86 "parser.tab.h" /* yacc.c:1909  */
+#line 97 "parser.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;

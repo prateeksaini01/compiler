@@ -9,30 +9,33 @@ extern int yylex();
 %}
 %option noyywrap
 %% 
-[ \t] { /* eat white spaces */  }
+[ \t] { 
+	/* eat white spaces */  
+	printf("%s", yytext );
+}
 
-("/*".*"*/")|("//"[^\n]*) { 
-	printf("comment.");
+"//"[^\n]* { 
+	printf("%s", yytext );
 }
 
 \".*\" {
-	printf("string literal.");
+	printf("%s", yytext );
 	return STRING;
 }
 
 ([0-9]+)|([0-9]+"."[0-9]+) {
-	printf("constant.");
+	printf("%s", yytext );
 	return CONSTANT;
 }
 
 "int"|"float"|"void" {
-	printf("a datatype.");
+	printf("%s", yytext );
 	return DATATYPE;
 }
 
 "if"|"else"|"while"|"for"|"return"|"break"|"continue"|"input"|"output" {
-	// printf("a keyword.");
-	printf("%s.", yytext );
+	// printf("%s", yytext );
+	printf("%s", yytext );
 	if( !strcmp(yytext,"if") )			return IF_K;
 	if( !strcmp(yytext,"else") )		return ELSE_K;
 	if( !strcmp(yytext,"while") )		return WHILE_K;
@@ -45,29 +48,83 @@ extern int yylex();
 }
 
 ";" {
-	printf("semicolon.");
+	printf("%s", yytext );
 	return SEMICOLON;
 }
 
 "," {
-	printf("comma.");
+	printf("%s", yytext );
 	return COMMA;
 }
 
-"="|"+"|"-"|"*"|"/"|"%"|"&"|"|"|"^"|"<"|">"|(("="|"+"|"-"|"*"|"/"|"%"|"&"|"|"|"^"|"<"|">")"=")|"!="|"<<"|">>" {
-	// printf("a binary operator.");
-	printf("%s.", yytext );
-	return BIN_OP;
-}
-
 "!"|"~"|"++"|"--" {
-	printf("unary operator.");
+	printf("%s", yytext );
 	return UN_OP;
 }
 
+"*" {
+	printf("%s", yytext );
+	return OP_MUL;
+}
+
+"/"|"%" {
+	printf("%s", yytext );
+	return BIN_OP_MUL;
+}
+
+"+"|"-" {
+	printf("%s", yytext );
+	return BIN_OP_ADD;
+}
+
+"<<"|">>" {
+	printf("%s", yytext );
+	return BIN_OP_SHIFT;
+}
+
+"<"|">"|">="|"<=" {
+	printf("%s", yytext );
+	return BIN_OP_REL;
+}
+
+"=="|"!=" {
+	printf("%s", yytext );
+	return BIN_OP_EQ;
+}
+
+"&" {
+	printf("%s", yytext );
+	return BIN_OP_BAND;
+}
+
+"^" {
+	printf("%s", yytext );
+	return BIN_OP_BXOR;
+}
+
+"|" {
+	printf("%s", yytext );
+	return BIN_OP_BOR;
+}
+
+"&&" {
+	printf("%s", yytext );
+	return BIN_OP_LAND;
+}
+
+"||" {
+	printf("%s", yytext );
+	return BIN_OP_LOR;
+}
+
+"="|(("+"|"-"|"*"|"/"|"%"|"&"|"|"|"^")"=") {
+	printf("%s", yytext );
+	return BIN_OP_ASSIGN;
+}
+
 [(){}\[\]] {
-	// printf("a bracket.");
-	printf("%s.", yytext );
+	// printf("%s", yytext );
+	printf("%s", yytext );
 	if( yytext[0] == '(' ) return OPEN_BRACKET;
 	if( yytext[0] == ')' ) return CLOSE_BRACKET;
 	if( yytext[0] == '[' ) return OPEN_SQUARE;
@@ -78,14 +135,14 @@ extern int yylex();
 
 
 [a-zA-Z][a-zA-Z0-9_]* {
-	printf("identifier.");
+	printf("%s", yytext );
 	// send yytext to parser ( later )
-	return INDENTIFIER;
+	return IDENTIFIER;
 }
 
 \n {
 	++lineno;
-	printf("\n");
+	printf("%s", yytext );
 }
 . {
 	printf("Unrecognised character %c at lineno %d", yytext[0], lineno);

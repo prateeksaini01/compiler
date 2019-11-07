@@ -33,6 +33,7 @@
 	FunctionDefinition *functionDefinition;
 
 	StringLit *stringlit;
+	Identifier *identifier;
 }
 
 %token <sval> STRING
@@ -103,7 +104,7 @@
 %type <whileStatement> whileStatement 
 %type <forStatement> forStatement 
 %type <ifElseStatement> ifElseStatement 
-%type <stringlit> functionIdentifier
+%type <identifier> functionIdentifier
 %type <functionDefinition> functionDefinition 
 %%
 
@@ -121,19 +122,24 @@ arrayAccessList
 | arrayAccessList OPEN_SQUARE expression CLOSE_SQUARE { $1->push_back($3); $$ = $1; } ;
 
 term 
-: IDENTIFIER { $$ = new StringLit($1); }
+: IDENTIFIER { $$ = new Identifier($1); }
 | literal { $$ = $1; }
 | functionCall { $$ = $1; }
-| OPEN_BRACKET expression CLOSE_BRACKET { $$ = $2; } ;
+| OPEN_BRACKET expression CLOSE_BRACKET { $$ = $2; } 
+| IDENTIFIER arrayAccessList { auto *it = new Identifier($1); it->array_accesses = $2; $$ = it; }
+| literal arrayAccessList { $1->array_accesses = $2; $$ = $1; }
+| functionCall arrayAccessList { $1->array_accesses = $2; $$ = $1; }
+| OPEN_BRACKET expression CLOSE_BRACKET arrayAccessList { $2->array_accesses = $4; $$ = $2; } ;
 
-arrayAccessTerm
-: term arrayAccessList { $1->array_accesses = $2; }
+/*arrayAccessTerm
+: term arrayAccessList { $1->array_accesses = $2; $$ = $1; }
 | term { $$ = $1; } ;
+*/
 
 // ++ -- ~ !
 prec0
-: arrayAccessTerm UN_OP { $$ = new PostUnaryOpExpression($1, $2); }
-| arrayAccessTerm { $$ = $1; };
+: term UN_OP { $$ = new PostUnaryOpExpression($1, $2); }
+| term { $$ = $1; };
 
 // ++ -- ~ ! + - * &
 prec1
@@ -212,14 +218,14 @@ commaSeparatedExpressions
 | commaSeparatedExpressions COMMA expression { $1->push_back($3); $$ = $1; } ;
 
 functionCall 
-: IDENTIFIER OPEN_BRACKET CLOSE_BRACKET { $$ = new FunctionCall(new StringLit($1), NULL); }
-| IDENTIFIER OPEN_BRACKET commaSeparatedExpressions CLOSE_BRACKET { $$ = new FunctionCall(new StringLit($1), $3); }
-| INPUT_K OPEN_BRACKET arrayAccessTerm CLOSE_BRACKET { std::vector<Expression *> *it = new std::vector<Expression *>(); it->push_back($3); $$ = new FunctionCall(new StringLit($1), it); }
-| OUTPUT_K OPEN_BRACKET expression CLOSE_BRACKET { std::vector<Expression *> *it = new std::vector<Expression *>(); it->push_back($3); $$ = new FunctionCall(new StringLit($1), it); } ;
+: IDENTIFIER OPEN_BRACKET CLOSE_BRACKET { $$ = new FunctionCall(new Identifier($1), NULL ); }
+| IDENTIFIER OPEN_BRACKET commaSeparatedExpressions CLOSE_BRACKET { $$ = new FunctionCall(new Identifier($1), $3); }
+| INPUT_K OPEN_BRACKET arrayAccessTerm CLOSE_BRACKET { std::vector<Expression *> *it = new std::vector<Expression *>(); it->push_back($3); $$ = new FunctionCall(new Identifier($1), it); }
+| OUTPUT_K OPEN_BRACKET expression CLOSE_BRACKET { std::vector<Expression *> *it = new std::vector<Expression *>(); it->push_back($3); $$ = new FunctionCall(new Identifier($1), it); } ;
 
 
 declaration
-: DATATYPE functionIdentifier { $$ = new Declaration($1, $2, NULL); }
+: DATATYPE functionIdentifier { $$ = new Declaration($1, $2, NULL ); }
 | DATATYPE functionIdentifier arrayAccessList { $$ = new Declaration($1, $2, $3); } ;
 
 commaSeparatedDeclarations 
@@ -227,7 +233,7 @@ commaSeparatedDeclarations
 | commaSeparatedDeclarations COMMA declaration { $1->push_back($3); $$ = $1; };
 
 statement 
-: SEMICOLON { /*$$ = $1;*/ $$ = NULL; }
+: SEMICOLON { /*$$ = $1;*/ $$ = new EmptyStatement(); }
 | RETURN_K expression SEMICOLON { $$ = new ReturnStatement($2); }
 | RETURN_K SEMICOLON { $$ = new ReturnStatement(NULL); }
 | BREAK_K SEMICOLON { $$ = new BreakStatement(); }
@@ -239,8 +245,8 @@ statement
 | commaSeparatedDeclarations SEMICOLON { $$ = new DeclarationStatement($1); } ;
 
 statements 
-: statement { std::vector<Statement *> *it = new std::vector<Statement *>(); it->push_back($1); }
-| statement statements { $2->push_back($1); $$ = $2; } ;
+: statement { std::vector<Statement *> *it = new std::vector<Statement *>(); it->push_back($1); $$ = it; }
+| statements statement { $1->push_back($2); $$ = $1; } ;
 
 block 
 : OPEN_CURLY statements CLOSE_CURLY { $$ = $2; };
@@ -263,7 +269,7 @@ ifElseStatement
 | IF_K OPEN_BRACKET expression CLOSE_BRACKET block ELSE_K block { $$ = new IfElseStatement($3, $5, $7); } ;
 
 functionIdentifier
-: IDENTIFIER { $$ = new StringLit($1); }
+: IDENTIFIER { $$ = new Identifier($1); }
 | OP_MUL functionIdentifier { $2->reference += 1; $$ = $2; } ;
 
 functionDefinition 

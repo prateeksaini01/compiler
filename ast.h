@@ -5,16 +5,22 @@
 #include <string.h>
 #include <vector>
 
-enum class Datatype {
-	INT, VOID, BOOL, FLOAT
+enum Datatype {
+	INT=0, VOID, BOOL, FLOAT
+};
+const char DatatypeName[][6] = {
+	"int", "void", "bool", "float"
 };
 
-enum class UnaryOp {
-	INCREMENT, DECREMENT, PLUS, MINUS, ADDRESS, DEREFERENCE, LOGICAL_NOT, BITWISE_NOT
+enum UnaryOp {
+	INCREMENT=0, DECREMENT, PLUS, MINUS, ADDRESS, DEREFERENCE, LOGICAL_NOT, BITWISE_NOT
+};
+const char UnaryOpName[][3] = {
+	"++", "--", "+", "-", "&", "*", "!", "~"
 };
 
-enum class BinaryOp {
-	ADD, SUB, MUL, DIV, 
+enum BinaryOp {
+	ADD=0, SUB, MUL, DIV, 
 	MOD, GT, LT, GE, LE, 
 	LAND, LOR, BAND, BOR, 
 	ASSIGN, ADD_ASSIGN, 
@@ -28,6 +34,12 @@ enum class BinaryOp {
 	RIGHT_SHIFT_ASSIGN, LEFT_SHIFT_ASSIGN,
 	EQUALS, NEQUALS
 };
+const char BinaryOpName[][4] = {
+	"+", "-", "*", "/", "%", ">", "<", ">=", "<=", "&&", "||", "&", 
+	"|", "=", "+=", "-=", "*=", "/=", "%=", ">>", "<<", ">=", "<=", 
+	">==", "<==", "&&=", "||=", "&=", "|=", ">>=", "<<=", "==", "!="
+};
+
 
 class ASTNode {
 public :
@@ -37,7 +49,7 @@ public :
 		if( !strcmp(datatype, "int") ) return Datatype::INT;
 		if( !strcmp(datatype, "float") ) return Datatype::FLOAT;
 		if( !strcmp(datatype, "void") ) return Datatype::VOID;
-		if( !strcmp(datatype, "bool") ) return Datatype::BOOL;
+		return Datatype::BOOL;
 	}
 	virtual void accept(Visitor *v) = 0;
 };
@@ -160,6 +172,16 @@ public :
 	void accept(Visitor *v) { v->visit(this); }
 };
 
+class Identifier : public Expression {
+public :
+	char *val;
+	Identifier( char *val ) {
+		this->val = val;
+	}
+	~Identifier(){}
+	void accept(Visitor *v) { v->visit(this); }
+};
+
 class CharLit : public Expression {
 public :
 	char val;
@@ -182,9 +204,9 @@ public :
 
 class FunctionCall : public Expression {
 public :
-	StringLit *identifier;
+	Identifier *identifier;
 	std::vector<Expression *> *expressions;
-	FunctionCall( StringLit *identifier, std::vector<Expression *> *expressions ) {
+	FunctionCall( Identifier *identifier, std::vector<Expression *> *expressions ) {
 		this->identifier = identifier;
 		this->expressions = expressions;
 	}
@@ -197,7 +219,7 @@ public :
 	Datatype datatype;
 	char *identifier;
 	std::vector<Expression *> *array_definition;
-	Declaration( char *datatype, StringLit *identifier, std::vector<Expression *> *array_definition ) {
+	Declaration( char *datatype, Identifier *identifier, std::vector<Expression *> *array_definition ) {
 		this->datatype = getDatatype(datatype);
 		this->identifier = identifier->val;
 		this->array_definition = array_definition;
@@ -211,6 +233,13 @@ public:
 	Statement(){};
 	~Statement(){};
 	virtual void accept(Visitor *v) = 0;
+};
+
+class EmptyStatement : public Statement {
+public:
+	EmptyStatement(){};
+	~EmptyStatement(){};
+	void accept(Visitor *v) { v->visit(this); }
 };
 
 class ReturnStatement : public Statement {
@@ -249,9 +278,9 @@ public:
 
 class DeclarationStatement : public Statement {
 public:
-	std::vector<Declaration *> *declaration;
-	DeclarationStatement(std::vector<Declaration *> *declaration) {
-		this->declaration = declaration;
+	std::vector<Declaration *> *declarations;
+	DeclarationStatement(std::vector<Declaration *> *declarations) {
+		this->declarations = declarations;
 	};
 	~DeclarationStatement(){};
 	void accept(Visitor *v) { v->visit(this); }
@@ -304,7 +333,7 @@ public :
 	char *identifier;
 	std::vector<Declaration *> *parameters;
 	std::vector<Statement *> *statements;
-	FunctionDefinition( char *datatype, StringLit *identifier, std::vector<Declaration *> *parameters, std::vector<Statement *> *statements ) {
+	FunctionDefinition( char *datatype, Identifier *identifier, std::vector<Declaration *> *parameters, std::vector<Statement *> *statements ) {
 		this->datatype = getDatatype(datatype);
 		this->identifier = identifier->val;
 		this->parameters = parameters;

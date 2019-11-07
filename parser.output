@@ -94,7 +94,7 @@ Grammar
    66          | commaSeparatedDeclarations SEMICOLON
 
    67 statements: statement
-   68           | statement statements
+   68           | statements statement
 
    69 block: OPEN_CURLY statements CLOSE_CURLY
 
@@ -947,7 +947,14 @@ State 59
 State 60
 
    67 statements: statement .
-   68           | statement . statements
+
+    $default  reduce using rule 67 (statements)
+
+
+State 61
+
+   68 statements: statements . statement
+   69 block: OPEN_CURLY statements . CLOSE_CURLY
 
     STRING        shift, and go to state 22
     CHAR          shift, and go to state 23
@@ -967,9 +974,8 @@ State 60
     BIN_OP_BAND   shift, and go to state 36
     UN_OP         shift, and go to state 37
     OPEN_BRACKET  shift, and go to state 38
+    CLOSE_CURLY   shift, and go to state 101
     IDENTIFIER    shift, and go to state 39
-
-    $default  reduce using rule 67 (statements)
 
     literal                     go to state 40
     term                        go to state 41
@@ -992,18 +998,10 @@ State 60
     functionCall                go to state 58
     declaration                 go to state 13
     commaSeparatedDeclarations  go to state 59
-    statement                   go to state 60
-    statements                  go to state 101
+    statement                   go to state 102
     whileStatement              go to state 62
     forStatement                go to state 63
     ifElseStatement             go to state 64
-
-
-State 61
-
-   69 block: OPEN_CURLY statements . CLOSE_CURLY
-
-    CLOSE_CURLY  shift, and go to state 102
 
 
 State 62
@@ -1775,16 +1773,16 @@ State 100
 
 State 101
 
-   68 statements: statement statements .
+   69 block: OPEN_CURLY statements CLOSE_CURLY .
 
-    $default  reduce using rule 68 (statements)
+    $default  reduce using rule 69 (block)
 
 
 State 102
 
-   69 block: OPEN_CURLY statements CLOSE_CURLY .
+   68 statements: statements statement .
 
-    $default  reduce using rule 69 (block)
+    $default  reduce using rule 68 (statements)
 
 
 State 103

@@ -1,3 +1,1 @@
-int main() {
-	x += y;
-}
+int main() { int a[5]; int x, int y; x += y; if(1){;} }

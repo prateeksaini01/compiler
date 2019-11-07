@@ -517,7 +517,7 @@ char *yytext;
 int lineno = 0;
 extern int yylex();
 
-#define allocateAndCopy(a, b) a = (char *)malloc( sizeof(char)*( strlen(b) + 1 ) ); strncpy( a, b, strlen(b) );
+#define allocateAndCopy(a, b) a = (char *)malloc( sizeof(char)*( strlen(b) + 1 ) ); strncpy( a, b, strlen(b)+1 )
 
 #line 523 "lex.yy.c"
 #line 524 "lex.yy.c"

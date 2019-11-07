@@ -7,7 +7,7 @@
 int lineno = 0;
 extern int yylex();
 
-#define allocateAndCopy(a, b) a = (char *)malloc( sizeof(char)*( strlen(b) + 1 ) ); strncpy( a, b, strlen(b) );
+#define allocateAndCopy(a, b) a = (char *)malloc( sizeof(char)*( strlen(b) + 1 ) ); strncpy( a, b, strlen(b)+1 )
 
 %}
 %option noyywrap
@@ -29,7 +29,7 @@ extern int yylex();
 	return STRING;
 }
 
-\'.\' {
+"'"."'" {
 	printf("%s", yytext );
 	yylval.cval = yytext[1];
 	return CHAR;

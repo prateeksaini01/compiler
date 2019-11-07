@@ -111,8 +111,9 @@ union YYSTYPE
 	FunctionDefinition *functionDefinition;
 
 	StringLit *stringlit;
+	Identifier *identifier;
 
-#line 116 "parser.tab.h" /* yacc.c:1909  */
+#line 117 "parser.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;

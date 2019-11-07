@@ -46,39 +46,42 @@ extern int yydebug;
   enum yytokentype
   {
     STRING = 258,
-    CONSTANT = 259,
-    DATATYPE = 260,
-    IF_K = 261,
-    ELSE_K = 262,
-    WHILE_K = 263,
-    FOR_K = 264,
-    RETURN_K = 265,
-    BREAK_K = 266,
-    CONTINUE_K = 267,
-    INPUT_K = 268,
-    OUTPUT_K = 269,
-    SEMICOLON = 270,
-    COMMA = 271,
-    OP_MUL = 272,
-    BIN_OP_MUL = 273,
-    BIN_OP_ADD = 274,
-    BIN_OP_SHIFT = 275,
-    BIN_OP_REL = 276,
-    BIN_OP_EQ = 277,
-    BIN_OP_ASSIGN = 278,
-    BIN_OP_BAND = 279,
-    BIN_OP_BOR = 280,
-    BIN_OP_BXOR = 281,
-    BIN_OP_LAND = 282,
-    BIN_OP_LOR = 283,
-    UN_OP = 284,
-    OPEN_BRACKET = 285,
-    CLOSE_BRACKET = 286,
-    OPEN_SQUARE = 287,
-    CLOSE_SQUARE = 288,
-    OPEN_CURLY = 289,
-    CLOSE_CURLY = 290,
-    IDENTIFIER = 291
+    CHAR = 259,
+    CONSTANT = 260,
+    DATATYPE = 261,
+    IF_K = 262,
+    ELSE_K = 263,
+    WHILE_K = 264,
+    FOR_K = 265,
+    RETURN_K = 266,
+    BREAK_K = 267,
+    CONTINUE_K = 268,
+    INPUT_K = 269,
+    OUTPUT_K = 270,
+    SEMICOLON = 271,
+    COMMA = 272,
+    OP_MUL = 273,
+    BIN_OP_MUL = 274,
+    BIN_OP_ADD = 275,
+    BIN_OP_SHIFT = 276,
+    BIN_OP_REL = 277,
+    BIN_OP_EQ = 278,
+    BIN_OP_ASSIGN = 279,
+    BIN_OP_BAND = 280,
+    BIN_OP_BOR = 281,
+    BIN_OP_BXOR = 282,
+    BIN_OP_LAND = 283,
+    BIN_OP_LOR = 284,
+    UN_OP = 285,
+    QUESTION = 286,
+    COLON = 287,
+    OPEN_BRACKET = 288,
+    CLOSE_BRACKET = 289,
+    OPEN_SQUARE = 290,
+    CLOSE_SQUARE = 291,
+    OPEN_CURLY = 292,
+    CLOSE_CURLY = 293,
+    IDENTIFIER = 294
   };
 #endif
 
@@ -87,13 +90,29 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 11 "parser.y" /* yacc.c:1909  */
+#line 16 "parser.y" /* yacc.c:1909  */
 
 	int   ival;
 	float fval;
-	char  sval[100];
+	char  *sval;
+	char  cval;
 
-#line 97 "parser.tab.h" /* yacc.c:1909  */
+	Program *program;
+	Expression *expression;
+	std::vector<Expression *> *expression_vector;
+	FunctionCall *functionCall;
+	Declaration *declaration;
+	std::vector<Declaration *> *declaration_vector;
+	Statement *statement;
+	std::vector<Statement *> *statement_vector;
+	WhileStatement *whileStatement;
+	ForStatement *forStatement;
+	IfElseStatement *ifElseStatement;
+	FunctionDefinition *functionDefinition;
+
+	StringLit *stringlit;
+
+#line 116 "parser.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;

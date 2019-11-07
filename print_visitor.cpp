@@ -60,6 +60,12 @@ public:
 	}
 	void visit(Identifier *node) {
 		printf("%s", node->val);
+		if( node->array_accesses != NULL )
+		for( auto x : *(node->array_accesses) ) {
+			printf("[");
+			x->accept(this);
+			printf("]");
+		}
 	}
 	void visit(StringLit *node) {
 		printf("\"%s\"", node->val);
@@ -78,6 +84,12 @@ public:
 				printf(", ");
 			else
 				printf(")");
+		}
+		if( node->array_accesses != NULL )
+		for( auto x : *(node->array_accesses) ) {
+			printf("[");
+			x->accept(this);
+			printf("]");
 		}
 	}
 	void visit(Declaration *node) {

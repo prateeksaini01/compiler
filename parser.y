@@ -125,21 +125,16 @@ term
 : IDENTIFIER { $$ = new Identifier($1); }
 | literal { $$ = $1; }
 | functionCall { $$ = $1; }
-| OPEN_BRACKET expression CLOSE_BRACKET { $$ = $2; } 
-| IDENTIFIER arrayAccessList { auto *it = new Identifier($1); it->array_accesses = $2; $$ = it; }
-| literal arrayAccessList { $1->array_accesses = $2; $$ = $1; }
-| functionCall arrayAccessList { $1->array_accesses = $2; $$ = $1; }
-| OPEN_BRACKET expression CLOSE_BRACKET arrayAccessList { $2->array_accesses = $4; $$ = $2; } ;
+| OPEN_BRACKET expression CLOSE_BRACKET { $$ = $2; } ;
 
-/*arrayAccessTerm
+arrayAccessTerm
 : term arrayAccessList { $1->array_accesses = $2; $$ = $1; }
 | term { $$ = $1; } ;
-*/
 
 // ++ -- ~ !
 prec0
-: term UN_OP { $$ = new PostUnaryOpExpression($1, $2); }
-| term { $$ = $1; };
+: arrayAccessTerm UN_OP { $$ = new PostUnaryOpExpression($1, $2); }
+| arrayAccessTerm { $$ = $1; };
 
 // ++ -- ~ ! + - * &
 prec1

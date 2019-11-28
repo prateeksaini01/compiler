@@ -34,6 +34,7 @@
 
 	StringLit *stringlit;
 	Identifier *identifier;
+	Block *block;
 }
 
 %token <sval> STRING
@@ -100,7 +101,7 @@
 %type <declaration_vector> commaSeparatedDeclarations 
 %type <statement> statement 
 %type <statement_vector> statements 
-%type <statement_vector> block 
+%type <block> block 
 %type <whileStatement> whileStatement 
 %type <forStatement> forStatement 
 %type <ifElseStatement> ifElseStatement 
@@ -244,7 +245,8 @@ statements
 | statements statement { $1->push_back($2); $$ = $1; } ;
 
 block 
-: OPEN_CURLY statements CLOSE_CURLY { $$ = $2; };
+// : statement { std::vector<Statement *> *it = new std::vector<Statement *>(); it->push_back($1); $$ = it; }
+: OPEN_CURLY statements CLOSE_CURLY { $$ = new Block($2); };
 
 whileStatement 
 : WHILE_K OPEN_BRACKET expression CLOSE_BRACKET block { $$ = new WhileStatement($3, $5); };

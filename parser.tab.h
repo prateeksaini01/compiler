@@ -112,8 +112,9 @@ union YYSTYPE
 
 	StringLit *stringlit;
 	Identifier *identifier;
+	Block *block;
 
-#line 117 "parser.tab.h" /* yacc.c:1909  */
+#line 118 "parser.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;

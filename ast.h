@@ -56,11 +56,16 @@ public :
 
 class Expression : public ASTNode {
 public :
+	bool islvalue;
+	int value;
+	int *pointer;
 	int reference, dereference;
 	std::vector<Expression *> *array_accesses;
 	Expression() {
-		reference = dereference = 0;
-		array_accesses = NULL;
+		this->pointer = NULL;
+		this->islvalue = false;
+		this->reference = dereference = 0;
+		this->array_accesses = NULL;
 	}
 	~Expression(){}
 	virtual void accept(Visitor *v) = 0;
@@ -176,6 +181,7 @@ class Identifier : public Expression {
 public :
 	char *val;
 	Identifier( char *val ) {
+		this->islvalue = true;
 		this->val = val;
 	}
 	~Identifier(){}
@@ -230,9 +236,28 @@ public :
 
 class Statement : public ASTNode {
 public:
-	Statement(){};
+	int dbcr;
+	int returnValue;
+	Statement(){
+		this->dbcr = 0;
+		this->returnValue = -1;
+	};
 	~Statement(){};
 	virtual void accept(Visitor *v) = 0;
+};
+
+class Block : public ASTNode {
+public:
+	int dbcr;
+	int returnValue;
+	std::vector<Statement *> *statements;
+	Block( std::vector<Statement *> *statements ) { 
+		this->statements = statements;
+		this->dbcr = 0;
+		this->returnValue = -1;
+	};
+	~Block(){};
+	void accept(Visitor *v) { v->visit(this); }
 };
 
 class EmptyStatement : public Statement {
@@ -289,10 +314,10 @@ public:
 class WhileStatement : public Statement {
 public:
 	Expression *expression;
-	std::vector<Statement *> *statements;
-	WhileStatement(Expression *expression, std::vector<Statement *> *statements ) {
+	Block *block;
+	WhileStatement(Expression *expression, Block *block ) {
 		this->expression = expression;
-		this->statements = statements;
+		this->block = block;
 	};
 	~WhileStatement(){};
 	void accept(Visitor *v) { v->visit(this); }
@@ -303,12 +328,12 @@ public:
 	Expression *init;
 	Expression *expr;
 	Expression *end;
-	std::vector<Statement *> *statements;
-	ForStatement(Expression *init, Expression *expr, Expression *end, std::vector<Statement *> *statements ) {
+	Block *block;
+	ForStatement(Expression *init, Expression *expr, Expression *end, Block *block ) {
 		this->init = init;
 		this->expr = expr;
 		this->end = end;
-		this->statements = statements;
+		this->block = block;
 	};
 	~ForStatement(){};
 	void accept(Visitor *v) { v->visit(this); }
@@ -317,8 +342,8 @@ public:
 class IfElseStatement : public Statement {
 public:
 	Expression *expression;
-	std::vector<Statement *> *if_block, *else_block;
-	IfElseStatement(Expression *expression, std::vector<Statement *> *if_block, std::vector<Statement *> *else_block ) {
+	Block *if_block, *else_block;
+	IfElseStatement(Expression *expression, Block *if_block, Block *else_block ) {
 		this->expression = expression;
 		this->if_block = if_block;
 		this->else_block = else_block;
@@ -332,12 +357,14 @@ public :
 	Datatype datatype;
 	char *identifier;
 	std::vector<Declaration *> *parameters;
-	std::vector<Statement *> *statements;
-	FunctionDefinition( char *datatype, Identifier *identifier, std::vector<Declaration *> *parameters, std::vector<Statement *> *statements ) {
+	Block *block;
+	int returnValue;
+	FunctionDefinition( char *datatype, Identifier *identifier, std::vector<Declaration *> *parameters, Block *block ) {
 		this->datatype = getDatatype(datatype);
 		this->identifier = identifier->val;
 		this->parameters = parameters;
-		this->statements = statements;
+		this->block = block;
+		this->returnValue = 0;
 	}
 	~FunctionDefinition(){}
 	void accept(Visitor *v) { v->visit(this); }

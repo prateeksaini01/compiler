@@ -11,6 +11,7 @@ class CharLit;
 class IntLit;
 class FunctionCall;
 class Declaration;
+class Block;
 class EmptyStatement;
 class ReturnStatement;
 class BreakStatement;
@@ -35,6 +36,7 @@ public:
 	virtual void visit(IntLit *) = 0;
 	virtual void visit(FunctionCall *) = 0;
 	virtual void visit(Declaration *) = 0;
+	virtual void visit(Block *) = 0;
 	virtual void visit(EmptyStatement *) = 0;
 	virtual void visit(ReturnStatement *) = 0;
 	virtual void visit(BreakStatement *) = 0;
